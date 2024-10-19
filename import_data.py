@@ -2,4 +2,8 @@
 
 # Author: Navesh Kumar
 # date : 19 october 2024
-# Version 1
+# Version 
+
+def GetData(product,Origin,End,AOS,AOE,context):
+    print(product,Origin,End,AOS,AOE,context)
+    return 100
