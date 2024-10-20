@@ -13,8 +13,8 @@ class momentumalgo(general_algo_framework):
         self.SetDataLocation("filepath")
 
     def TimeContext(self):
-        self.SetAlgoObservationStart('2024-10-01') # date
-        self.SetAlgoObservationEnd('2024-10-10') #date
+        self.SetAlgoObservationStart([2024,10,20,6,0,0]) # date
+        self.SetAlgoObservationEnd([2024,10,20,8,0,0]) #date
         self.SetProductObservationStart(40) # minutes
         self.SetProductObservationEnd(20) # minutes
         self.SetProducts(

@@ -28,15 +28,13 @@ class general_algo_framework():
     
     def SetAlgoObservationStart(self,OriginDate):
         try:
-            string_Origin = OriginDate
-            self.Origin = datetime.strptime(string_Origin,'%Y-%m-%d')
+            self.Origin = datetime(*OriginDate)
         except Exception as e:
             print("Error in SetAlgoObservationStart {e}")
 
     def SetAlgoObservationEnd(self,EndDate):
         try:
-            string_End = EndDate
-            self.End = datetime.strptime(string_End,'%Y-%m-%d')
+            self.End = datetime(EndDate)
             check_logical_delta = self.End - self.Origin
             if check_logical_delta.days <0:
                 raise ValueError("End date is before Start")
