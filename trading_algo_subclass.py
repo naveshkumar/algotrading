@@ -13,10 +13,11 @@ class momentumalgo(general_algo_framework):
         self.SetDataLocation("filepath")
 
     def TimeContext(self):
-        self.SetAlgoObservationStart([2024,10,20,6,0,0]) # date
+        self.SetAlgoObservationStart([2024,10,19,6,0,0]) # date
         self.SetAlgoObservationEnd([2024,10,20,8,0,0]) #date
         self.SetProductObservationStart(40) # minutes
         self.SetProductObservationEnd(20) # minutes
+        # these are the intrnal product nomenclature
         self.SetProducts(
             {
                 'HH':[1,2,3,4,5,6,7,8,9,10,11,12,
@@ -27,6 +28,7 @@ class momentumalgo(general_algo_framework):
                         )
         
     def AlgoMemory(self):
+        # this is where we will do pattern matching for dynamic number of strats
         self.SetAlgoMemory(
             {
             'open': False,
