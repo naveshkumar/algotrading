@@ -5,6 +5,7 @@
 # version : 2024.10.19.01.01
 
 from algorithm_parentclass import general_algo_framework
+import pandas as pd
 
 class momentumalgo(general_algo_framework):
     
@@ -29,12 +30,93 @@ class momentumalgo(general_algo_framework):
         
     def AlgoMemory(self):
         # this is where we will do pattern matching for dynamic number of strats
-        self.SetAlgoMemory(
+        self.Set_algo_memory(
             {
+            'calibrate_moment_t0' : None,
+            'calibrate_moment_t1' : None,
+            'momentum_direction_close': None,
             'open': False,
-            'close':False
+            'close':False          
             }
         )
     
-    def Algorithm(self):
-        pass
+    def Algorithm(self,current_product,onData,GC,current_nop):
+        
+        if not self.algo_memory['open']:
+            time_now = GC - onData['timestamp'].max()
+            time_now = time_now.total_seconds() / 60
+            if 36 < time_now <= 40:
+                calibrate_moment_t0_spread = (onData['bid'].max() + onData['offer'].min())/2
+                self.algo_memory['calibrate_moment_t0'] = calibrate_moment_t0_spread
+            elif 35 >= time_now > 31:
+                calibrate_moment_t1_spread = (onData['bid'].max() + onData['offer'].min())/2
+                self.algo_memory['calibrate_moment_t1'] = calibrate_moment_t1_spread
+
+            if (self.algo_memory['calibrate_moment_t0'] is not None) and (self.algo_memory['calibrate_moment_t1'] is not None):
+                momentum_direction = self.algo_memory['calibrate_moment_t1'] - self.algo_memory['calibrate_moment_t0']
+
+                if momentum_direction <= 0:
+                    Trade_value = onData['bid'].max()
+                    Trade_direction = "BUY"
+                    append_PnL_book = {
+                                    'Product':current_product, 
+                                    'Trade_value':Trade_value, 
+                                    'Trade_direction':Trade_direction, 
+                                    'NOP':current_nop, 
+                                    'VWABid':None,
+                                    'VWAOffer':None
+                    }
+                    append_PnL_book = pd.DataFrame([append_PnL_book])
+                    self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
+                    self.algo_memory['open'] = True
+                    self.algo_memory['close'] = True
+                    self.algo_memory['momentum_direction_close'] = 'SELL'
+                else:
+                    Trade_value = onData['offer'].min()
+                    Trade_direction = "SELL"
+                    append_PnL_book = {
+                                    'Product':current_product, 
+                                    'Trade_value':Trade_value, 
+                                    'Trade_direction':Trade_direction, 
+                                    'NOP':current_nop, 
+                                    'VWABid':None,
+                                    'VWAOffer':None
+                    }
+                    append_PnL_book = pd.DataFrame([append_PnL_book])
+                    self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
+                    self.algo_memory['open'] = True
+                    self.algo_memory['close'] = True
+                    self.algo_memory['momentum_direction_close'] = 'BUY'
+
+        if self.algo_memory['close']:
+            time_now = GC - onData['timestamp'].max()
+            time_now = time_now.total_seconds() / 60
+            if 5 < time_now <= 35:
+                if self.algo_memory['momentum_direction_close'] == 'BUY':
+                    Trade_value = onData['bid'].max()
+                    Trade_direction = "BUY"
+                    append_PnL_book = {
+                                        'Product':current_product, 
+                                        'Trade_value':Trade_value, 
+                                        'Trade_direction':Trade_direction, 
+                                        'NOP':current_nop, 
+                                        'VWABid':None,
+                                        'VWAOffer':None
+                        }
+                    append_PnL_book = pd.DataFrame([append_PnL_book])
+                    self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
+                    self.algo_memory['close'] = False
+                else:
+                    Trade_value = onData['offer'].min()
+                    Trade_direction = "SELL"
+                    append_PnL_book = {
+                                        'Product':current_product, 
+                                        'Trade_value':Trade_value, 
+                                        'Trade_direction':Trade_direction, 
+                                        'NOP':current_nop, 
+                                        'VWABid':None,
+                                        'VWAOffer':None
+                        }
+                    append_PnL_book = pd.DataFrame([append_PnL_book])
+                    self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
+                    self.algo_memory['close'] = False

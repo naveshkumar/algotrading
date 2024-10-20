@@ -77,7 +77,21 @@ def TransformData(product,DataUpload,POS,POE):
     # create the foundation data format time | Bid | BV | Offer | OV
         # not needed as dont have sample data on 20 October 2024
     
-    return algo_observed_data
+    return algo_observed_data, gate_closure_time
+
+def PnLTransformation(product,DataUpload):
+    # get the product
+    prd = product.split('-')[0]
+
+    #filter the product
+    foundation_df = DataUpload[
+        DataUpload['product_name'] == prd
+    ]
+
+    # create the foundation data format time | Bid | BV | Offer | OV
+        # not needed as dont have sample data on 20 October 2024
+    
+    return foundation_df
 
 # Step 2: non-compatiable format to compatiable format transformation
 # Step 2.1 : Get data requirements from 
@@ -86,8 +100,9 @@ def GetData(product,POS,POE,context,filepath):
 
     if context == "Backtest":
         DataUpload = LoadData(product,filepath)
-        foundation =TransformData(product,DataUpload,POS,POE)
+        foundation, GC =TransformData(product,DataUpload,POS,POE)
     else:
+        # an ODBC cursor or a API query connecting to the live data feed
         print("Connecting to Live Stream ......")
         
-    return foundation
+    return foundation, GC

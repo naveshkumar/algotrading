@@ -7,6 +7,8 @@
 from import_data import GetData
 from datetime import datetime, timedelta
 from product_gc_mapping import product_to_time_mapping
+from net_open_position_source import GetNOP
+from pnl import CreatePnLBook, CalculatePnL
 
 class general_algo_framework():
     
@@ -67,58 +69,83 @@ class general_algo_framework():
             print(f"Error in SetProducts {e}")
 
     def DoCreateTradeSchdule(self):
-        collect_products_to_be_traded = []
-        delivery_period = self.Origin
-        # rounding to nearest delivery period
-        m = delivery_period.minute
-        if m == 0:
-            delivery_period.replace(second = 0,microsecond = 0)
-        elif m <= 30:
-            delivery_period.replace(minute = 30, second = 0,microsecond = 0)
-        else:
-            (delivery_period + timedelta(hours=1)).replace(minute = 0, second = 0,microsecond = 0)
+        try:
+            collect_products_to_be_traded = []
+            delivery_period = self.Origin
+            # rounding to nearest delivery period
+            m = delivery_period.minute
+            if m == 0:
+                delivery_period.replace(second = 0,microsecond = 0)
+            elif m <= 30:
+                delivery_period.replace(minute = 30, second = 0,microsecond = 0)
+            else:
+                (delivery_period + timedelta(hours=1)).replace(minute = 0, second = 0,microsecond = 0)
 
-        while delivery_period <= self.End:
-            collect_products_to_be_traded.append(delivery_period)
-            delivery_period = delivery_period + timedelta(minutes = 30)
+            while delivery_period <= self.End:
+                collect_products_to_be_traded.append(delivery_period)
+                delivery_period = delivery_period + timedelta(minutes = 30)
 
-        #convert the datetime into string for getting data
-        str_products_to_be_traded = []
-        for product in collect_products_to_be_traded:
-            str_products_to_be_traded.append(f"{product.year}_{str(product.month).zfill(2)}_{str(product.day).zfill(2)}_{str(product.hour).zfill(2)}_{str(product.minute).zfill(2)}_{str(product.second).zfill(2)}")
+            #convert the datetime into string for getting data
+            str_products_to_be_traded = []
+            for product in collect_products_to_be_traded:
+                str_products_to_be_traded.append(f"{product.year}_{str(product.month).zfill(2)}_{str(product.day).zfill(2)}_{str(product.hour).zfill(2)}_{str(product.minute).zfill(2)}_{str(product.second).zfill(2)}")
 
-        self.products_to_be_traded = []
-        #find the product number for this delivery period
-        for product_string in str_products_to_be_traded:
-            product_map_id , check_entry_prd = product_to_time_mapping(product_string)
-            if check_entry_prd in self.products:
-                self.products_to_be_traded.append(f"{product_map_id}-{product_string}")
-
+            self.products_to_be_traded = []
+            #find the product number for this delivery period
+            for product_string in str_products_to_be_traded:
+                product_map_id , check_entry_prd = product_to_time_mapping(product_string)
+                if check_entry_prd in self.products:
+                    self.products_to_be_traded.append(f"{product_map_id}-{product_string}")
+        
+        except Exception as e:
+            print(f"Error in DoCreateTradeSchdule {e}")
     
-    def SetAlgoMemory(self,algo_memory):
+    def Set_algo_memory(self,algo_memory):
         try:
             self.algo_memory = algo_memory
         except Exception as e:
             print(f"Error in SetProducts {e}")
+    
+    def DoCreatePnLBook(self):
+        try:
+            self.PnLBook = CreatePnLBook()
+        except Exception as e:
+            print(f"Error in DoCreatePnLBook {e}")
 
 
     def process_product(self):
         try:
         # loop through the data
             for current_product in self.products_to_be_traded:
-                # initate the memory
-                self.algo_memory['open'] = False
-                self.algo_memory['close'] = False
-
-                #collect the full data for current_product
+                self.AlgoMemory()
+                #collect the data for current_product
                 # w.r.t Origin,End, AOS, AOE
-                foundation_data = GetData(current_product,
+                foundation_data, GC = GetData(current_product,
                                           self.POS,
                                           self.POE,
                                           self.context,
                                           self.filepath)
-                print(f'{foundation_data}')
+                
+                if self.context == "Backtest":
+                    current_nop = GetNOP()
 
+                    # in case of backtesting foundation_data will be a dataframe
+                    simulator =  foundation_data['timestamp'].min()
+                    simulation_end = foundation_data['timestamp'].max()
+
+                    while simulator <= simulation_end:
+                        foundation_data_slice = foundation_data[
+                                                                foundation_data['timestamp'] <= simulator
+                                                                ]
+                        self.Algorithm(current_product,
+                                       foundation_data_slice,
+                                       GC,
+                                       current_nop)
+                        simulator = simulator + timedelta(seconds=5)
+                else:
+                    # in case of live foundation_data will be a connection
+                    print("Live Trading ....")
+            CalculatePnL(self.products_to_be_traded,self.PnLBook,self.filepath)
         except Exception as e:
             print(f"Error in product {current_product} implementing algorithm {e}")
         

@@ -25,6 +25,8 @@ if __name__ == "__main__":
                     subclass_instance.TimeContext()
                 if hasattr(subclass_instance,'DoCreateTradeSchdule'):
                     subclass_instance.DoCreateTradeSchdule()
+                if hasattr(subclass_instance,'DoCreatePnLBook'):
+                    subclass_instance.DoCreatePnLBook()
                 if hasattr(subclass_instance,'AlgoMemory'):
                     subclass_instance.AlgoMemory()
                 if hasattr(subclass_instance,'process_product'):
