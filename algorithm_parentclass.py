@@ -115,8 +115,9 @@ class general_algo_framework():
                 foundation_data = GetData(current_product,
                                           self.POS,
                                           self.POE,
-                                          self.context)
-                print(f'for {current_product} data is {foundation_data}')
+                                          self.context,
+                                          self.filepath)
+                print(f'{foundation_data}')
 
         except Exception as e:
             print(f"Error in product {current_product} implementing algorithm {e}")

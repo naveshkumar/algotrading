@@ -10,10 +10,10 @@ class momentumalgo(general_algo_framework):
     
     def DataSetup(self):
         self.SetContext("Backtest")
-        self.SetDataLocation("filepath")
+        self.SetDataLocation('D:/vpi/output_parquet')
 
     def TimeContext(self):
-        self.SetAlgoObservationStart([2024,10,19,6,0,0]) # date
+        self.SetAlgoObservationStart([2024,10,20,6,0,0]) # date
         self.SetAlgoObservationEnd([2024,10,20,8,0,0]) #date
         self.SetProductObservationStart(40) # minutes
         self.SetProductObservationEnd(20) # minutes
