@@ -28,6 +28,16 @@ class general_algo_framework():
                 print("Build Ingress Stream Here")
         except Exception as e:
             print(f"Error in SetDataLocation {e}")
+
+    def SetOutputLocation(self,outpath):
+        try:
+            if self.context == "Backtest":
+                #filepath is a location with parquet files are
+                self.outpath = outpath
+            elif self.context == "Live":
+                print("Build Ingress Stream Here")
+        except Exception as e:
+            print(f"Error in SetOutputLocation {e}")
     
     def SetAlgoObservationStart(self,OriginDate):
         try:
@@ -145,7 +155,7 @@ class general_algo_framework():
                 else:
                     # in case of live foundation_data will be a connection
                     print("Live Trading ....")
-            CalculatePnL(self.products_to_be_traded,self.PnLBook,self.filepath)
+            CalculatePnL(self.products_to_be_traded,self.PnLBook,self.filepath,self.outpath)
         except Exception as e:
             print(f"Error in product {current_product} implementing algorithm {e}")
         

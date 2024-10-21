@@ -12,6 +12,7 @@ class momentumalgo(general_algo_framework):
     def DataSetup(self):
         self.SetContext("Backtest")
         self.SetDataLocation('D:/vpi/output_parquet')
+        self.SetOutputLocation('D:/vpi')
 
     def TimeContext(self):
         self.SetAlgoObservationStart([2024,10,20,6,0,0]) # date
@@ -62,9 +63,7 @@ class momentumalgo(general_algo_framework):
                                     'Product':current_product, 
                                     'Trade_value':Trade_value, 
                                     'Trade_direction':Trade_direction, 
-                                    'NOP':current_nop, 
-                                    'VWABid':None,
-                                    'VWAOffer':None
+                                    'NOP':current_nop
                     }
                     append_PnL_book = pd.DataFrame([append_PnL_book])
                     self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
@@ -78,9 +77,7 @@ class momentumalgo(general_algo_framework):
                                     'Product':current_product, 
                                     'Trade_value':Trade_value, 
                                     'Trade_direction':Trade_direction, 
-                                    'NOP':current_nop, 
-                                    'VWABid':None,
-                                    'VWAOffer':None
+                                    'NOP':current_nop
                     }
                     append_PnL_book = pd.DataFrame([append_PnL_book])
                     self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
@@ -99,9 +96,7 @@ class momentumalgo(general_algo_framework):
                                         'Product':current_product, 
                                         'Trade_value':Trade_value, 
                                         'Trade_direction':Trade_direction, 
-                                        'NOP':current_nop, 
-                                        'VWABid':None,
-                                        'VWAOffer':None
+                                        'NOP':current_nop
                         }
                     append_PnL_book = pd.DataFrame([append_PnL_book])
                     self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
@@ -113,9 +108,7 @@ class momentumalgo(general_algo_framework):
                                         'Product':current_product, 
                                         'Trade_value':Trade_value, 
                                         'Trade_direction':Trade_direction, 
-                                        'NOP':current_nop, 
-                                        'VWABid':None,
-                                        'VWAOffer':None
+                                        'NOP':current_nop
                         }
                     append_PnL_book = pd.DataFrame([append_PnL_book])
                     self.PnLBook = pd.concat([self.PnLBook, append_PnL_book], ignore_index=True)
