@@ -105,7 +105,7 @@ class general_algo_framework():
             self.products_to_be_traded = []
             #find the product number for this delivery period
             for product_string in str_products_to_be_traded:
-                product_map_id , check_entry_prd = product_to_time_mapping(product_string)
+                product_map_id , check_entry_prd = product_to_time_mapping(self.product_catogory,product_string)
                 if check_entry_prd in self.products:
                     self.products_to_be_traded.append(f"{product_map_id}-{product_string}")
         
