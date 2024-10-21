@@ -6,7 +6,7 @@
 
 from import_data import GetData
 from datetime import datetime, timedelta
-from product_gc_mapping import product_to_time_mapping
+from product_gc_mapping import products_to_be_traded_generator
 from net_open_position_source import GetNOP
 from pnl import CreatePnLBook, CalculatePnL
 
@@ -82,33 +82,10 @@ class general_algo_framework():
 
     def DoCreateTradeSchdule(self):
         try:
-            collect_products_to_be_traded = []
-            delivery_period = self.Origin
-            # rounding to nearest delivery period
-            m = delivery_period.minute
-            if m == 0:
-                delivery_period.replace(second = 0,microsecond = 0)
-            elif m <= 30:
-                delivery_period.replace(minute = 30, second = 0,microsecond = 0)
-            else:
-                (delivery_period + timedelta(hours=1)).replace(minute = 0, second = 0,microsecond = 0)
-
-            while delivery_period <= self.End:
-                collect_products_to_be_traded.append(delivery_period)
-                delivery_period = delivery_period + timedelta(minutes = 30)
-
-            #convert the datetime into string for getting data
-            str_products_to_be_traded = []
-            for product in collect_products_to_be_traded:
-                str_products_to_be_traded.append(f"{product.year}_{str(product.month).zfill(2)}_{str(product.day).zfill(2)}_{str(product.hour).zfill(2)}_{str(product.minute).zfill(2)}_{str(product.second).zfill(2)}")
-
-            self.products_to_be_traded = []
-            #find the product number for this delivery period
-            for product_string in str_products_to_be_traded:
-                product_map_id , check_entry_prd = product_to_time_mapping(self.product_catogory,product_string)
-                if check_entry_prd in self.products:
-                    self.products_to_be_traded.append(f"{product_map_id}-{product_string}")
-        
+           self.products_to_be_traded = products_to_be_traded_generator(self.products,
+                                                                        self.product_catogory,
+                                                                        self.Origin,
+                                                                        self.End)
         except Exception as e:
             print(f"Error in DoCreateTradeSchdule {e}")
     
