@@ -74,7 +74,9 @@ class general_algo_framework():
     def SetProducts(self,products):
         try:
             product_dict = products
-            self.products = product_dict['HH']
+            self.product_catogory =[*product_dict.keys()][0]
+            _key_var = [*product_dict.keys()][0]
+            self.products = product_dict[_key_var]
         except Exception as e:
             print(f"Error in SetProducts {e}")
 
