@@ -48,7 +48,7 @@ Any such additional dataset must be publicly accessible through the internet, fr
 
 Class Overview
 
-The momentumalgo class is a subclass of the general_algo_framework and implements a specific trading algorithm based on market momentum. The class monitors bid and offer prices for a financial product and executes trades based on the observed changes in price momentum.
+The momentumalgo class is a subclass of the general_algo_framework and implements a specific trading algorithm based on market momentum. The class monitors bid and offer prices for a financial product and executes trades based on the observed changes in price momentum. This subclass itself is flexible enough to handle intraday trading product wise. Given the liquidty only XBID market is available in this version
 Methods
 1. DataSetup(self)
 
