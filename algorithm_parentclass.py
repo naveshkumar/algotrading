@@ -109,6 +109,7 @@ class general_algo_framework():
                 self.AlgoMemory()
                 #collect the data for current_product
                 # w.r.t Origin,End, AOS, AOE
+                ## Navesh : current product can now ready for new database
                 foundation_data, GC = GetData(current_product,
                                           self.POS,
                                           self.POE,

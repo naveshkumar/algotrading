@@ -36,7 +36,7 @@ def products_to_be_traded_generator(products,product_catogory,origin,end):
     #convert the datetime into string for getting data
     str_products_to_be_traded = []
     for product in collect_products_to_be_traded:
-        str_products_to_be_traded.append(f"{product.year}_{str(product.month).zfill(2)}_{str(product.day).zfill(2)}_{str(product.hour).zfill(2)}_{str(product.minute).zfill(2)}_{str(product.second).zfill(2)}")
+        str_products_to_be_traded.append(f"{product.year}_{str(product.month)}_{str(product.day)}_{str(product.hour)}_{str(product.minute)}_{str(product.second)}")
 
     products_to_be_traded = []
     #find the product number for this delivery period
