@@ -3,7 +3,7 @@
 # Version 1
 
 import pandas as pd
-from import_data import LoadData, PnLTransformation
+from import_data import GetData
 
 def CreatePnLBook():
     PnLBook = pd.DataFrame(columns=['Product', 
@@ -12,31 +12,44 @@ def CreatePnLBook():
                                     'NOP'])
     return PnLBook
 
-def CalculatePnL(products_to_be_traded,PnLBook,filepath,outpath):
+def CalculatePnL(products_to_be_traded,
+                 POS,
+                 POE,
+                 PnLBook,
+                 product_catogory,
+                 context,
+                 filepath,
+                 outpath):
     PnLBook = PnLBook.copy()
     PnLBook['VWABid'] = None
     PnLBook['VWAOffer'] = None
 
     # per product calculate the volume weigthed average bid and offer
-    for product in products_to_be_traded:
-        this_product_full_data = LoadData(product,filepath)
-        this_product_full_data = PnLTransformation(product,this_product_full_data)
+    for current_product in products_to_be_traded:
+        this_product_full_data, GC = GetData(filepath,
+                                        current_product,
+                                        POS,
+                                        POE,
+                                        product_catogory,
+                                        context)
+
         
         # Ensure no NaN values for VWABid calculation
-        valid_bid_data = this_product_full_data[['bid', 'bv']].dropna()
+        valid_bid_data = this_product_full_data[['Bid', 'BQty']].dropna()
+        valid_bid_data['Bid'] = pd.to_numeric(valid_bid_data['Bid'], errors='coerce')
 
         # Calculate VWABid
-        VWABid = (valid_bid_data['bid'] * valid_bid_data['bv']).sum() / valid_bid_data['bv'].sum()
+        VWABid = (valid_bid_data['Bid'] * valid_bid_data['BQty']).sum() / valid_bid_data['BQty'].sum()
 
         # Ensure no NaN values for VWAOffer calculation
-        valid_offer_data = this_product_full_data[['offer', 'ov']].dropna()
+        valid_offer_data = this_product_full_data[['Ask', 'AQty']].dropna()
+        valid_offer_data['Ask'] = pd.to_numeric(valid_offer_data['Ask'], errors='coerce')
 
         # Calculate VWAOffer
-        VWAOffer = (valid_offer_data['offer'] * valid_offer_data['ov']).sum() / valid_offer_data['ov'].sum()
+        VWAOffer = (valid_offer_data['Ask'] * valid_offer_data['AQty']).sum() / valid_offer_data['AQty'].sum()
 
-        PnLBook.loc[PnLBook['Product'] == product, 'VWABid'] = VWABid
-
-        PnLBook.loc[PnLBook['Product'] == product,'VWAOffer'] = VWAOffer
+        PnLBook.loc[PnLBook['Product'] == current_product, 'VWABid'] = VWABid
+        PnLBook.loc[PnLBook['Product'] == current_product,'VWAOffer'] = VWAOffer
 
 
     # the profit loss statement of the BUY is determined by how less was the trade from the VWA Bid

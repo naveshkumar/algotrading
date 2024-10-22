@@ -54,23 +54,6 @@ class general_algo_framework():
         except Exception as e:
             print(f"Error in SetAlgoObservationEnd {e}")
 
-    def SetProductObservationStart(self,POS):
-        try:
-            string_POS = POS
-            self.POS = float(string_POS)
-        except Exception as e:
-            print(f"Error in SetAlgoObservationStart {e}")
-
-    def SetProductObservationEnd(self,POE):
-        try:
-            string_POE = POE
-            self.POE = float(string_POE)
-            check_logical_delta = self.POS - self.POE
-            if check_logical_delta <0:
-                raise ValueError("End date is before Start")
-        except Exception as e:
-            print(f"Error in SetAlgoObservationStart {e}")
-
     def SetProducts(self,products):
         try:
             product_dict = products
@@ -88,6 +71,23 @@ class general_algo_framework():
                                                                         self.End)
         except Exception as e:
             print(f"Error in DoCreateTradeSchdule {e}")
+
+    def SetProductObservationStart(self,POS):
+        try:
+            string_POS = POS
+            self.POS = float(string_POS)
+        except Exception as e:
+            print(f"Error in SetAlgoObservationStart {e}")
+
+    def SetProductObservationEnd(self,POE):
+        try:
+            string_POE = POE
+            self.POE = float(string_POE)
+            check_logical_delta = self.POS - self.POE
+            if check_logical_delta <0:
+                raise ValueError("End date is before Start")
+        except Exception as e:
+            print(f"Error in SetAlgoObservationStart {e}")
     
     def Set_algo_memory(self,algo_memory):
         try:
@@ -106,15 +106,17 @@ class general_algo_framework():
         try:
         # loop through the data
             for current_product in self.products_to_be_traded:
+                print(f'processing {current_product}')
                 self.AlgoMemory()
                 #collect the data for current_product
                 # w.r.t Origin,End, AOS, AOE
                 ## Navesh : current product can now ready for new database
-                foundation_data, GC = GetData(current_product,
-                                          self.POS,
-                                          self.POE,
-                                          self.context,
-                                          self.filepath)
+                foundation_data, GC = GetData(self.filepath,
+                                              current_product,
+                                              self.POS,
+                                              self.POE,
+                                              self.product_catogory,
+                                              self.context)
                 
                 if self.context == "Backtest":
                     current_nop = GetNOP()
@@ -135,7 +137,14 @@ class general_algo_framework():
                 else:
                     # in case of live foundation_data will be a connection
                     print("Live Trading ....")
-            CalculatePnL(self.products_to_be_traded,self.PnLBook,self.filepath,self.outpath)
+            CalculatePnL(self.products_to_be_traded,
+                         self.POS,
+                         self.POE,
+                         self.PnLBook,
+                         self.product_catogory,
+                         self.context,
+                         self.filepath,
+                         self.outpath)
         except Exception as e:
             print(f"Error in product {current_product} implementing algorithm {e}")
         
