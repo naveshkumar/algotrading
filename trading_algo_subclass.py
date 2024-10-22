@@ -15,14 +15,14 @@ class momentumalgo(general_algo_framework):
         self.SetOutputLocation('D:/vpi')
 
     def TimeContext(self):
-        self.SetAlgoObservationStart([2023,5,2,0,0,0]) # date
-        self.SetAlgoObservationEnd([2023,5,3,23,0,0]) #date
+        self.SetAlgoObservationStart([2023,5,1,0,0,0]) # date
+        self.SetAlgoObservationEnd([2023,5,10,23,0,0]) #date
         self.SetProductObservationStart(120) # minutes
         self.SetProductObservationEnd(0) # minutes
         # these are the intrnal product nomenclature
         self.SetProducts(
             {
-                'QH':[40,48]
+                'QH':[21,22,23,24,25,26,27,28,29,30,31]
             }
                         )
         
